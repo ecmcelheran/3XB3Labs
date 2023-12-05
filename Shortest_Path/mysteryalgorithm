@@ -1,0 +1,156 @@
+import random
+import matplotlib.pyplot as plot
+import time 
+
+
+class DirectedWeightedGraph:
+
+    def __init__(self):
+        self.adj = {}
+        self.weights = {}
+
+    def are_connected(self, node1, node2):
+        for neighbour in self.adj[node1]:
+            if neighbour == node2:
+                return True
+        return False
+
+    def adjacent_nodes(self, node):
+        return self.adj[node]
+
+    def add_node(self, node):
+        self.adj[node] = []
+
+    def add_edge(self, node1, node2, weight):
+        if node2 not in self.adj[node1]:
+            self.adj[node1].append(node2)
+        self.weights[(node1, node2)] = weight
+
+    def w(self, node1, node2):
+        if self.are_connected(node1, node2):
+            return self.weights[(node1, node2)]
+
+    def number_of_nodes(self):
+        return len(self.adj)
+
+def mystery(G):
+    n = G.number_of_nodes()
+    d = init_d(G)
+    for k in range(n):
+        for i in range(n):
+            for j in range(n):
+                if d[i][j] > d[i][k] + d[k][j]: 
+                    d[i][j] = d[i][k] + d[k][j]
+    return d
+
+def init_d(G):
+    n = G.number_of_nodes()
+    d = [[float("inf") for j in range(n)] for i in range(n)]
+    for i in range(n):
+        for j in range(n):
+            if G.are_connected(i, j):
+                d[i][j] = G.w(i, j)
+        d[i][i] = 0
+    return d
+
+def create_random_complete_graph(n,upper):
+    G = DirectedWeightedGraph()
+    for i in range(n):
+        G.add_node(i)
+    for i in range(n):
+        for j in range(n):
+            if i != j:
+                G.add_edge(i,j,random.randint(1,upper))
+    return G
+
+
+def measure_execution_time(G):
+    start_time = time.time()
+    mystery(G)
+    end_time = time.time()
+    return end_time - start_time
+
+
+def generate_log_log_plot(graph_sizes, allow_negative_weights=True):
+    execution_times = []
+    for size in graph_sizes:
+      #  G = create_random_complete_graph(size, size * 2, allow_negative_weights)
+        execution_time = measure_execution_time(G)
+        execution_times.append(execution_time)
+
+    #scaled_execution_times = [time * 1000 for time in execution_times]
+
+    plot.loglog(graph_sizes, execution_times, marker='o', color='b')
+    plot.title('Mystery Function Complexity Analysis')
+    plot.xlabel('Size of Graph')
+    plot.ylabel('Time (milliseconds)')
+    plot.show()
+
+graph_sizes = range(2, 1001, 10)
+G=create_random_complete_graph(10, 10, True)
+generate_log_log_plot(graph_sizes, allow_negative_weights=True)
+
+
+
+
+
+'''
+def create_random_graph(n, e, allow_negative_weights=True):
+    G = DirectedWeightedGraph()
+    for i in range(e):
+        a = random.randint(0, n - 1)
+        b = random.randint(0, n - 1)
+
+        while a == b or G.are_connected(a, b):
+            a = random.randint(0, n - 1)
+            b = random.randint(0, n - 1)
+
+        weight = random.randint(-10, 10) if allow_negative_weights else random.randint(1, 10)
+        G.add_edge(a, b, weight)
+
+    return G
+
+def measure_execution_time(G):
+    start_time = time.time()
+    mystery(G)
+    end_time = time.time()
+    return end_time - start_time
+
+def generate_log_log_plot(graph_sizes, allow_negative_weights=True):
+    execution_times = []
+    for size in graph_sizes:
+        G = create_random_complete_graph(size, size * 2, allow_negative_weights)
+        execution_time = measure_execution_time(G)
+        execution_times.append(execution_time)
+
+    #scaled_execution_times = [time * 1000 for time in execution_times]
+
+    plot.loglog(graph_sizes, execution_times, marker='o', color='b')
+    plot.title('Mystery Function Complexity Analysis')
+    plot.xlabel('Size of Graph')
+    plot.ylabel('Time (milliseconds)')
+    plot.show()
+
+graph_sizes = range(2, 1001, 10)
+
+generate_log_log_plot(graph_sizes, allow_negative_weights=True)
+
+'''
+'''
+G = DirectedWeightedGraph()
+G.add_node(0)
+G.add_node(1)
+G.add_node(2)
+G.add_node(3)
+
+G.add_edge(0, 3, 10)
+G.add_edge(0, 1, 5)
+G.add_edge(1, 2, 3)
+G.add_edge(2, 3, 1)
+
+# result shows the shortest path between every pair of nodes
+
+#G=create_random_graph(10, 10, True)
+result = mystery(G)
+print(result)
+'''
