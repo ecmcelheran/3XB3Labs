@@ -403,3 +403,21 @@ l = [2,4,6,7,10,14]
 result = bsp_solution(l, 2)
 
 print(result)
+
+def bsp_value(L, m):
+    solution = bsp_solution(L, m)
+    max_distance = 0
+
+    for i in range(len(solution) - 1):
+        distance = solution[i + 1] - solution[i]
+        max_distance = max(max_distance, distance)
+
+    return max_distance
+
+
+
+L = [2, 4, 6, 7, 10, 14]
+m = 2
+
+max_value = bsp_value(L, m)
+print(max_value)
