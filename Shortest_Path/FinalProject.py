@@ -12,7 +12,6 @@ class DirectedWeightedGraph:
         self.adj = {}
         self.weights = {}
         self.coord = {}
-        self.line = {}
 
     def are_connected(self, node1, node2):
         for neighbour in self.adj[node1]:
@@ -29,25 +28,11 @@ class DirectedWeightedGraph:
     def add_node_coord(self, node, x, y):
         self.adj[node] = []
         self.coord[node] = [x, y]
-        self.line[node] = []
 
     def add_edge(self, node1, node2, weight):
         if node2 not in self.adj[node1]:
             self.adj[node1].append(node2)
         self.weights[(node1, node2)] = weight
-
-    def add_edge_line(self, node1, node2, weight, line):
-        if node2 not in self.adj[node1]:
-            self.adj[node1].append(node2)
-        if line not in self.line[node1]:
-            self.line[node1].append(line)
-        if line not in self.line[node2]:
-            self.line[node2].append(line)
-        coord1 = self.coord[node1]
-        coord2 = self.coord[node2]
-        # weight is distance between stations
-        dist = math.sqrt((coord2[0]-coord1[0])**2 + (coord2[1]-coord1[1])**2)
-        self.weights[(node1, node2)] = dist
 
     def w(self, node1, node2):
         if self.are_connected(node1, node2):
