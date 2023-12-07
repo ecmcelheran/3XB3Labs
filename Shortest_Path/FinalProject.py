@@ -406,18 +406,16 @@ print(result)
 
 def bsp_value(L, m):
     solution = bsp_solution(L, m)
-    max_distance = 0
+    n = len(solution)
+    
+    distances = [solution[i+1] - solution[i] for i in range(n-1)]
+    
+    min_distance_index = distances.index(min(distances))
+    
+    return max(solution[min_distance_index], solution[min_distance_index+1]) - min(solution[min_distance_index], solution[min_distance_index+1])
 
-    for i in range(len(solution) - 1):
-        distance = solution[i + 1] - solution[i]
-        max_distance = max(max_distance, distance)
-
-    return max_distance
-
-
-
-L = [2, 4, 6, 7, 10, 14]
-m = 2
+L = [2 ,7, 10, 14]
+m = 0 
 
 max_value = bsp_value(L, m)
 print(max_value)
