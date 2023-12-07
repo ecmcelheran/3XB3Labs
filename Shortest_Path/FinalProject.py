@@ -446,3 +446,20 @@ def bsp_solution(m, n):
 
 ad_exp1()
 
+
+def bsp_value(L, m):
+    solution = bsp_solution(L, m)
+    n = len(solution)
+    
+    distances = [solution[i+1] - solution[i] for i in range(n-1)]
+    
+    min_distance_index = distances.index(min(distances))
+    
+    return max(solution[min_distance_index], solution[min_distance_index+1]) - min(solution[min_distance_index], solution[min_distance_index+1])
+
+L = [2 ,7, 10, 14]
+m = 0 
+
+max_value = bsp_value(L, m)
+print(max_value)
+
