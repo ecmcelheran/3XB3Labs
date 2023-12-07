@@ -43,7 +43,11 @@ class DirectedWeightedGraph:
             self.line[node1].append(line)
         if line not in self.line[node2]:
             self.line[node2].append(line)
-        self.weights[(node1, node2)] = weight
+        coord1 = self.coord[node1]
+        coord2 = self.coord[node2]
+        # weight is distance between stations
+        dist = math.sqrt((coord2[0]-coord1[0])**2 + (coord2[1]-coord1[1])**2)
+        self.weights[(node1, node2)] = dist
 
     def w(self, node1, node2):
         if self.are_connected(node1, node2):
@@ -190,6 +194,7 @@ def heuristic_function(g, t):
     return h
 
 
+
 def ad_exp1():
     # create graph and heuristic
     g = tube_map()
@@ -199,8 +204,7 @@ def ad_exp1():
     for node in g.adj:
         h = heuristic_function(g, node)
         start = timeit.default_timer()
-        #a_star(g, 1, node, h)
-        a_star_algorithm(g, 1, node)
+        a_star(g, 1, node, h)
         end = timeit.default_timer()
         time1.append(end - start)
 
@@ -243,7 +247,7 @@ def quicksort_copy(L, h):
             right.append(node)
     return quicksort_copy(left, h) + [pivot] + quicksort_copy(right, h)
 
-
+# time based on distance from target
 def ad_exp2():
     # create graph and heuristic
     g = tube_map()
@@ -279,23 +283,18 @@ def ad_exp2():
 
 def ad_exp3():
     # create graph and heuristic
-    L = []
-    L2 = []
     g = tube_map()
     time1 = []
     time2 = []
-    h = heuristic_function(g, 11)
+    line1 = [11, 49, 82, 84, 87, 113, 114, 137, 140, 143, 148, 159, 163, 185, 192, 193, 197, 206, 212, 237, 246, 278,
+             279, 281, 298]
 
-    # station 4 part of 1 line
-    for node in g.adj:
-        if g.line[4][0] in g.line[node]:
-            L.append(node)
-        else:
-            L2.append(node)
-
+    target = 11
+    h = heuristic_function(g, target)
+    L = quicksort(line1, h)
     for node in L:
         start = timeit.default_timer()
-        a_star(g, node, 4, h)
+        a_star(g, node, target, h)
         end = timeit.default_timer()
         time1.append(end - start)
 
@@ -308,8 +307,55 @@ def ad_exp3():
     plot.plot(time2, label="Dijkstra")
 
     plot.legend()
-    plot.title("Source Node vs. Time")
-    plot.xlabel("Source Node")
+    plot.title("Source Node vs. Time on Line 1")
+    plot.xlabel("Euclidean Distance of Source Node to Target on Line 1")
+    plot.ylabel("Time (seconds)")
+
+    plot.show()
+
+def ad_exp4():
+    # create graph and heuristic
+    g = tube_map()
+    time1 = []
+    time2 = []
+    time3 = []
+    # pick pairs with lots of transfers
+
+    line1 = [11, 49, 82, 84, 87, 113, 114, 137, 140, 143, 148, 159, 163, 185, 192, 193, 197, 206, 212, 237, 246, 278,
+             279, 281, 298]
+    line10 = [1, 5, 9, 10, 17, 30, 31, 39, 57, 60, 73, 74, 75, 95, 99, 107, 110, 116, 117, 118, 125, 126, 126, 128,
+              130, 131, 132, 133, 134, 145, 146, 151, 160, 176, 182, 187, 190, 194, 197, 210, 220, 222, 223, 232, 234,
+              235, 236, 251, 252, 265, 266, 271, 303]
+    line13 = [4,13,19,20,27,32,42,43,61,63,64,65,69,70,79,86,97,106,120,135,152,155,
+              171,201,203,204,217,219,225,238,247,262,284,292]
+    target = 4
+    dist = []
+    linedist = []
+    h = heuristic_function(g, target)
+    L = quicksort(g.adj, h)
+    for node in L:
+        dist.append(h[node])
+        start = timeit.default_timer()
+        a_star(g, node, target, h)
+        end = timeit.default_timer()
+        diff = end-start
+        time1.append(diff)
+        if node in line13:
+            time3.append(diff)
+            linedist.append(h[node])
+
+        start = timeit.default_timer()
+        dijkstra(g, node)
+        end = timeit.default_timer()
+        time2.append(end - start)
+
+    plot.plot(dist, time1, label="A*")
+    plot.plot(dist, time2, label="Dijkstra")
+    plot.plot(linedist, time3, label="A* Line 13 Stations")
+
+    plot.legend()
+    plot.title("Source Node vs. Time to Station 4")
+    plot.xlabel("Euclidean Distance of Source Node to Target")
     plot.ylabel("Time (seconds)")
 
     plot.show()
@@ -390,7 +436,6 @@ def bsp_solution(m, n):
                 else:
                     v[i][j] = opt2
 
-
     for i in range(len(m)+1):
         line = " "
         for j in range(n+1):
@@ -399,7 +444,5 @@ def bsp_solution(m, n):
 
     return v[len(m)][n]
 
-l = [2,4,6,7,10,14]
-result = bsp_solution(l, 2)
+ad_exp1()
 
-print(result)
