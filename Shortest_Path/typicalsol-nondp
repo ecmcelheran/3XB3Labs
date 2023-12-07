@@ -1,0 +1,41 @@
+#4,6
+def minimize_adjacent_distance(nums, m):
+    n = len(nums)
+    
+    distances = [(nums[i+1] - nums[i], i) for i in range(n-1)]
+   # print ("dist = "  + distances [nums])
+    sorted_distances = sorted(distances, key=lambda x: x[0], reverse= True)
+    print ( sorted_distances)
+    removal_set = set()
+    
+
+    if m > 1:
+        for i in range(m):
+
+            removal_set.add(sorted_distances.pop()[1])
+            print(i)
+            m-=1
+
+
+    else:
+        removal_set.add(sorted_distances.pop()[1])
+
+    '''
+    if m == 1:
+    else:
+        for i in range(1, m):
+            removal_set.add(sorted_distances[i][1])
+    '''
+            
+
+    print (removal_set)
+    result_subset = [nums[i] for i in range(n) if i not in removal_set]
+    
+    return result_subset
+
+# Example:
+sorted_list = [2, 4, 6, 7, 10, 14]
+max_removed_elements = 2
+
+result = minimize_adjacent_distance(sorted_list, max_removed_elements)
+print(result)
