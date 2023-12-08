@@ -67,6 +67,33 @@ def dijkstra(G, source):
     return dist
 
 
+def dijkstra_approx(G, source, k):
+    pred = {}  # Predecessor dictionary. Isn't returned, but here for your understanding
+    dist = {}  # Distance dictionary
+    relax_count = {} # dict to keep track of the relaxations
+    Q = min_heap.MinHeap([])
+    nodes = list(G.adj.keys())
+
+    # Initialize priority queue/heap and distances
+    for node in nodes:
+        Q.insert(min_heap.Element(node, float("inf")))
+        dist[node] = float("inf")
+        relax_count[node] = 0 # before relaxing
+    Q.decrease_key(source, 0)
+
+    # Meat of the algorithm
+    while not Q.is_empty():
+        current_element = Q.extract_min()
+        current_node = current_element.value
+        dist[current_node] = current_element.key
+        for neighbour in G.adj[current_node]:
+            relax_count[neighbour] += 1
+            if dist[current_node] + G.w(current_node, neighbour) < dist[neighbour] and relax_count[neighbour] <= k:
+                    Q.decrease_key(neighbour, dist[current_node] + G.w(current_node, neighbour))
+                    dist[neighbour] = dist[current_node] + G.w(current_node, neighbour)
+                    pred[neighbour] = current_node
+    return dist
+
 def bellman_ford(G, source):
     pred = {} #Predecessor dictionary. Isn't returned, but here for your understanding
     dist = {} #Distance dictionary
@@ -87,6 +114,28 @@ def bellman_ford(G, source):
     return dist
 
 
+def bellman_ford_approx(G, source, k):
+    pred = {} #Predecessor dictionary. Isn't returned, but here for your understanding
+    dist = {} #Distance dictionary
+    relax_count = {} #dict of count 
+    nodes = list(G.adj.keys())
+
+    #Initialize distances
+    for node in nodes:
+        dist[node] = float("inf")
+        relax_count[node] = 0
+    dist[source] = 0
+
+    #Meat of the algorithm        
+    for _ in range(G.number_of_nodes()):
+        for node in nodes:
+            for neighbour in G.adj[node]:
+                relax_count[neighbour] += 1
+                if dist[neighbour] > dist[node] + G.w(node, neighbour) and relax_count[neighbour] <= k:
+                    dist[neighbour] = dist[node] + G.w(node, neighbour)
+                    pred[neighbour] = node
+    return dist
+
 def total_dist(dist):
     total = 0
     for key in dist.keys():
@@ -102,8 +151,74 @@ def create_random_complete_graph(n,upper):
             if i != j:
                 G.add_edge(i,j,random.randint(1,upper))
     return G
+    
+def exp1():
+    numNodes = 25
+    maxRelaxations = 40
+    maxRelaxationsList = []
+    dijkstraRatio = []
+    bellmanFordRatio = []
 
+    G = create_random_complete_graph(numNodes, 30)
+    
+    for k in range(1, maxRelaxations + 1):  # Starting from k=1 to avoid division by zero
+        maxRelaxationsList.append(k)
+        G1_copy = copy.deepcopy(G)
+        G2_copy = copy.deepcopy(G)
 
+        dijkstra_graph = dijkstra_approx(G1_copy, 0, k)
+        dijkstra_actual_dist = total_dist(dijkstra(G1_copy, 0))
+        dijkstra_approx_dist = total_dist(dijkstra_graph)
+        dijkstra_Ratio = dijkstra_approx_dist / dijkstra_actual_dist
+        dijkstraRatio.append(dijkstra_Ratio)
+
+        bellman_ford_graph = bellman_ford_approx(G2_copy, 0, k)
+        bellman_actual_dist = total_dist(bellman_ford(G2_copy, 0))
+        bellman_approx_dist = total_dist(bellman_ford_graph)
+        bellmanFord_Ratio = bellman_approx_dist / bellman_actual_dist
+        bellmanFordRatio.append(bellmanFord_Ratio)
+
+    plot.plot(maxRelaxationsList, dijkstraRatio, label='Dijkstra Approximation')
+    plot.plot(maxRelaxationsList, bellmanFordRatio, label='Bellman-Ford Approximation')
+    plot.legend()
+    plot.title('Ratio of Total Distance vs Number of Relaxations')
+    plot.xlabel('Number of Relaxations')
+    plot.ylabel('Increased Ratio of Total Distance')
+    plot.show()
+    
+def exp2():
+    max_nodes = 100
+    k = 40
+    num_nodes_list = []
+    dijkstraRatio = []
+    bellmanFordRatio = []
+
+    for num_nodes in range(2, max_nodes + 1):
+        num_nodes_list.append(num_nodes)
+        G = create_random_complete_graph(num_nodes, 20)
+        G1_copy = copy.deepcopy(G)
+        G2_copy = copy.deepcopy(G)
+
+        dijkstra_graph = dijkstra_approx(G1_copy, 0, k)
+        dijkstra_actual_dist = total_dist(dijkstra(G1_copy, 0))
+        dijkstra_approx_dist = total_dist(dijkstra_graph)
+        dijkstra_Ratio = dijkstra_approx_dist / dijkstra_actual_dist
+        dijkstraRatio.append(dijkstra_Ratio)
+
+        bellman_ford_graph = bellman_ford_approx(G2_copy, 0, k)
+        bellman_actual_dist = total_dist(bellman_ford(G2_copy, 0))
+        bellman_approx_dist = total_dist(bellman_ford_graph)
+        bellmanFord_Ratio = bellman_approx_dist / bellman_actual_dist
+        bellmanFordRatio.append(bellmanFord_Ratio)
+
+    plot.plot(num_nodes_list, dijkstraRatio, label='Dijkstra Approximation')
+    plot.plot(num_nodes_list, bellmanFordRatio, label='Bellman-Ford Approximation')
+    plot.legend()
+    plot.title('Ratio of Total Distance vs Number of Nodes')
+    plot.xlabel('Number of Nodes')
+    plot.ylabel('Ratio of Total Distance')
+    plot.show()
+    
 #Assumes G represents its nodes as integers 0,1,...,(n-1)
 def mystery(G):
     n = G.number_of_nodes()
@@ -126,6 +241,32 @@ def init_d(G):
     return d
 
 
+def mystery_exp(max_nodes):
+    runs = 30
+    avg_times = []
+    node_num_list = []
+
+    for node_num in range(1, max_nodes + 1):
+        total_time = 0
+
+        for _ in range(runs):
+            G = create_random_complete_graph(node_num, 100)
+
+            start = timeit.default_timer()
+            mystery(G)
+            time_elapsed = timeit.default_timer() - start
+
+            total_time += time_elapsed
+
+        avg_times.append(total_time / runs)
+        node_num_list.append(node_num)
+
+
+    plot.title("Runtime of Mystery Algorithm")
+    plot.xlabel("log(Number of nodes)")
+    plot.ylabel("log(Run time)")
+    plot.loglog(node_num_list, avg_times)
+    plot.show()
 def a_star(G, s, d, h):
     pred = {}
     dist = {}
