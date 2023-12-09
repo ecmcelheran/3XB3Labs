@@ -488,38 +488,6 @@ def ad_exp3():
     g = tube_map()
     time1 = []
     time2 = []
-    line1 = [11, 49, 82, 84, 87, 113, 114, 137, 140, 143, 148, 159, 163, 185, 192, 193, 197, 206, 212, 237, 246, 278,
-             279, 281, 298]
-
-    target = 11
-    h = heuristic_function(g, target)
-    L = quicksort(line1, h)
-    for node in L:
-        start = timeit.default_timer()
-        a_star(g, node, target, h)
-        end = timeit.default_timer()
-        time1.append(end - start)
-
-        start = timeit.default_timer()
-        dijkstra(g, node)
-        end = timeit.default_timer()
-        time2.append(end - start)
-
-    plot.plot(time1, label="A*")
-    plot.plot(time2, label="Dijkstra")
-
-    plot.legend()
-    plot.title("Source Node vs. Time on Line 1")
-    plot.xlabel("Euclidean Distance of Source Node to Target on Line 1")
-    plot.ylabel("Time (seconds)")
-
-    plot.show()
-
-def ad_exp4():
-    # create graph and heuristic
-    g = tube_map()
-    time1 = []
-    time2 = []
     time3 = []
     # pick pairs with lots of transfers
 
@@ -558,6 +526,38 @@ def ad_exp4():
     plot.legend()
     plot.title("Source Node vs. Time to Station 4")
     plot.xlabel("Euclidean Distance of Source Node to Target")
+    plot.ylabel("Time (seconds)")
+
+    plot.show()
+
+def ad_exp4():
+    # create graph and heuristic
+    g = tube_map()
+    time1 = []
+    time2 = []
+    line1 = [11, 49, 82, 84, 87, 113, 114, 137, 140, 143, 148, 159, 163, 185, 192, 193, 197, 206, 212, 237, 246, 278,
+             279, 281, 298]
+
+    target = 11
+    h = heuristic_function(g, target)
+    L = quicksort(line1, h)
+    for node in L:
+        start = timeit.default_timer()
+        a_star(g, node, target, h)
+        end = timeit.default_timer()
+        time1.append(end - start)
+
+        start = timeit.default_timer()
+        dijkstra(g, node)
+        end = timeit.default_timer()
+        time2.append(end - start)
+
+    plot.plot(time1, label="A*")
+    plot.plot(time2, label="Dijkstra")
+
+    plot.legend()
+    plot.title("Source Node vs. Time on Line 1")
+    plot.xlabel("Euclidean Distance of Source Node to Target on Line 1")
     plot.ylabel("Time (seconds)")
 
     plot.show()
