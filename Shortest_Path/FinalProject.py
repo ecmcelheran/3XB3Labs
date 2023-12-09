@@ -245,11 +245,11 @@ def sparse_vs_dense_experiment():
     dijkstra_dense_ratio = []
     bellman_ford_dense_ratio = []
 
-    for num_nodes in range(2, max_nodes + 1):
+    for num_nodes in range(10, max_nodes + 1):
         num_nodes_list.append(num_nodes)
 
         # sparse graph with n edges
-        sparse_graph = create_random_graph(num_nodes, num_nodes, 10)
+        sparse_graph = create_random_graph(num_nodes, 6*num_nodes, 10)
         sparse_graph_copy = copy.deepcopy(sparse_graph)
 
         # dense graph with n*(n-1) edges
