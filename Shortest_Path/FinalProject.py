@@ -381,7 +381,13 @@ def tube_map():
         csvEdgeReader = csv.reader(edge)
         next(csvEdgeReader)
         for row in csvEdgeReader:
-            g.add_edge_line(int(row[0]), int(row[1]), int(row[3]), int(row[2]))
+            coord1 = g.coord[int(row[0])]
+            coord2 = g.coord[int(row[1])]
+            # weight is distance between stations
+            dist = math.sqrt((coord2[0]-coord1[0])**2 + (coord2[1]-coord1[1])**2)
+            # add edge both ways
+            g.add_edge(int(row[0]), int(row[1]), dist)
+            g.add_edge(int(row[1]), int(row[0]), dist)
     return g
 
 
