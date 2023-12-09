@@ -578,43 +578,6 @@ def find_min_dist(m):
             mindiff = comp
     return mindiff
 
-
-def bsp_value(m,n):
-    last = []
-    value = [[0 for _ in range(n+1)] for _ in range((len(m)+1))]
-    # row
-    for i in range(len(m)+1):
-        # col
-        for j in range(n+1):
-            if j==0 and i>=2:
-                value[i][j] = find_min_dist(m[:i])
-            elif j >= i-1:
-                value[i][j] = math.inf
-                # last 2 have bigger gap than current max min gap
-            elif j+2 == i:
-                l = m[:i]
-                print(l)
-                value[i][j] = l[-1]-l[0]
-            else:
-                #optimal list from previous iteration
-                last.append(m[i-1])
-                l = last
-                print(l)
-                h = []
-                for a in range(i):
-                    if a!=(i-2):
-                        h.append(m[a])
-                print(h)
-                print(find_min_dist(h))
-                if len(l)>=3:
-                    print(min(value[i-1][j], l[-1]-l[-2]))
-                    value[i][j] = max(min(value[i-1][j], l[-1]-l[-2]), find_min_dist(h))
-                    if find_min_dist(h)>min(value[i-1][j], l[-1]-l[-2]):
-                        last = h
-            print(value)
-    return value[len(m)][n]
-
-
 def bsp_solution(m, n):
     v = [[m for _ in range(n+1)] for _ in range((len(m)+1))]
     for i in range(len(m)+1):
