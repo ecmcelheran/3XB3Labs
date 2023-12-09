@@ -218,6 +218,79 @@ def exp2():
     plot.xlabel('Number of Nodes')
     plot.ylabel('Ratio of Total Distance')
     plot.show()
+
+def create_random_graph(n, e):
+    g = DirectedWeightedGraph()
+
+    for i in range(e):
+        a = random.randint(0, n - 1)
+        b = random.randint(0, n - 1)
+
+        while a == b or g.are_connected(a, b):
+            a = random.randint(0, n - 1)
+            b = random.randint(0, n - 1)
+
+        g.add_edge(a, b)
+
+    return g
+
+def sparse_vs_dense_experiment():
+    max_nodes = 100
+    num_nodes_list = []
+    dijkstra_sparse_ratio = []
+    bellman_ford_sparse_ratio = []
+    dijkstra_dense_ratio = []
+    bellman_ford_dense_ratio = []
+
+    for num_nodes in range(2, max_nodes + 1):
+        num_nodes_list.append(num_nodes)
+
+        # sparse graph with n edges
+        sparse_graph = create_random_graph(num_nodes, num_nodes)
+        sparse_graph_copy = copy.deepcopy(sparse_graph)
+
+        # dense graph with n*(n-1) edges
+        dense_graph = create_random_graph(num_nodes, num_nodes * (num_nodes - 1))
+        dense_graph_copy = copy.deepcopy(dense_graph)
+
+        # Dijkstra's and BellmanFord for sparse graph
+        dijkstra_sparse_graph = dijkstra_approx(sparse_graph_copy, 0, 20)
+        dijkstra_sparse_actual_dist = total_dist(dijkstra(sparse_graph_copy, 0))
+        dijkstra_sparse_approx_dist = total_dist(dijkstra_sparse_graph)
+        dijkstra_sparse_ratio.append(dijkstra_sparse_approx_dist / dijkstra_sparse_actual_dist)
+
+        bellman_ford_sparse_graph = bellman_ford_approx(sparse_graph_copy, 0, 20)
+        bellman_ford_sparse_actual_dist = total_dist(bellman_ford(sparse_graph_copy, 0))
+        bellman_ford_sparse_approx_dist = total_dist(bellman_ford_sparse_graph)
+        bellman_ford_sparse_ratio.append(bellman_ford_sparse_approx_dist / bellman_ford_sparse_actual_dist)
+
+        # Dijkstra's and BellmanFord for dense graph
+        dijkstra_dense_graph = dijkstra_approx(dense_graph_copy, 0, 20)
+        dijkstra_dense_actual_dist = total_dist(dijkstra(dense_graph_copy, 0))
+        dijkstra_dense_approx_dist = total_dist(dijkstra_dense_graph)
+        dijkstra_dense_ratio.append(dijkstra_dense_approx_dist / dijkstra_dense_actual_dist)
+
+        bellman_ford_dense_graph = bellman_ford_approx(dense_graph_copy, 0, 20)
+        bellman_ford_dense_actual_dist = total_dist(bellman_ford(dense_graph_copy, 0))
+        bellman_ford_dense_approx_dist = total_dist(bellman_ford_dense_graph)
+        bellman_ford_dense_ratio.append(bellman_ford_dense_approx_dist / bellman_ford_dense_actual_dist)
+    fig, (ax1, ax2) = plot.subplots(1, 2, figsize=(12, 5))
+    ax1.plot(num_nodes_list, dijkstra_sparse_ratio, label='Dijkstra Approximation')
+    ax1.plot(num_nodes_list, bellman_ford_sparse_ratio, label='Bellman-Ford Approximation')
+    ax1.legend()
+    ax1.set_title('Sparse Graph - Ratio of Total Distance vs Number of Nodes')
+    ax1.set_xlabel('Number of Nodes')
+    ax1.set_ylabel('Ratio of Total Distance')
+
+    ax2.plot(num_nodes_list, dijkstra_dense_ratio, label='Dijkstra Approximation')
+    ax2.plot(num_nodes_list, bellman_ford_dense_ratio, label='Bellman-Ford Approximation')
+    ax2.legend()
+    ax2.set_title('Dense Graph - Ratio of Total Distance vs Number of Nodes')
+    ax2.set_xlabel('Number of Nodes')
+    ax2.set_ylabel('Ratio of Total Distance')
+
+    plot.tight_layout()
+    plot.show()
     
 #Assumes G represents its nodes as integers 0,1,...,(n-1)
 def mystery(G):
