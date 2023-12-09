@@ -219,8 +219,11 @@ def exp2():
     plot.ylabel('Ratio of Total Distance')
     plot.show()
 
-def create_random_graph(n, e):
+def create_random_graph(n, e, upper):
     g = DirectedWeightedGraph()
+
+    for i in range(n):
+        g.add_node(i)
 
     for i in range(e):
         a = random.randint(0, n - 1)
@@ -230,7 +233,7 @@ def create_random_graph(n, e):
             a = random.randint(0, n - 1)
             b = random.randint(0, n - 1)
 
-        g.add_edge(a, b)
+        g.add_edge(a, b, random.randint(1,upper))
 
     return g
 
@@ -246,11 +249,11 @@ def sparse_vs_dense_experiment():
         num_nodes_list.append(num_nodes)
 
         # sparse graph with n edges
-        sparse_graph = create_random_graph(num_nodes, num_nodes)
+        sparse_graph = create_random_graph(num_nodes, num_nodes, 10)
         sparse_graph_copy = copy.deepcopy(sparse_graph)
 
         # dense graph with n*(n-1) edges
-        dense_graph = create_random_graph(num_nodes, num_nodes * (num_nodes - 1))
+        dense_graph = create_random_graph(num_nodes, num_nodes * (num_nodes - 1), 10)
         dense_graph_copy = copy.deepcopy(dense_graph)
 
         # Dijkstra's and BellmanFord for sparse graph
