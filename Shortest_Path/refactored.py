@@ -109,7 +109,7 @@ class Astar:
 class Adapter(SPAlgorithm):
     def __init__(self, G):
         self.class_Astar = Astar()
-        self.G = G  # Assuming G is an instance of DirectedWeightedGraph
+        self.G = G  
 
     def find_shortest_path(self, start, destination):
         h = heuristic_function(self.G, destination)
